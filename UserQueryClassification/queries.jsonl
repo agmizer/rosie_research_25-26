@@ -1,0 +1,170 @@
+{"text":"I don’t really get why this works like that, like conceptually, not the math part.","label":"CONCEPTUAL"}
+{"text":"Why do we assume that thing in class is true? It feels kind of hand-wavy.","label":"CONCEPTUAL"}
+{"text":"I’m confused about what this variable actually represents, not how to calculate it.","label":"CONCEPTUAL"}
+{"text":"Can you explain in words what’s actually going on here? I’m lost.","label":"CONCEPTUAL"}
+{"text":"What’s the intuition behind this algorithm, like why it’s structured that way.","label":"CONCEPTUAL"}
+{"text":"I think I’m missing the big picture of this topic.","label":"CONCEPTUAL"}
+{"text":"Why does changing that parameter flip everything? I don’t get the idea.","label":"CONCEPTUAL"}
+{"text":"Is there an easy way to think about this law without equations?","label":"CONCEPTUAL"}
+{"text":"I keep mixing up these two concepts, what’s the real difference?","label":"CONCEPTUAL"}
+{"text":"What does convergence actually mean here? I thought I knew but now idk.","label":"CONCEPTUAL"}
+{"text":"I’m not understanding what the model is assuming about the data.","label":"CONCEPTUAL"}
+{"text":"Why does this only work in this case and not the other one?","label":"CONCEPTUAL"}
+{"text":"Can you just explain what’s happening step by step in plain English?","label":"CONCEPTUAL"}
+{"text":"This feels like magic, why does this approximation make sense?","label":"CONCEPTUAL"}
+{"text":"What’s the intuition for why this goes to zero eventually?","label":"CONCEPTUAL"}
+{"text":"I don’t see how this connects to what we learned last week.","label":"CONCEPTUAL"}
+{"text":"Why do we even care about this condition?","label":"CONCEPTUAL"}
+{"text":"I’m confused about what problem this method is actually solving.","label":"CONCEPTUAL"}
+{"text":"Is this basically the same idea as the other theorem or no?","label":"CONCEPTUAL"}
+{"text":"I feel like I’m memorizing steps without understanding why.","label":"CONCEPTUAL"}
+{"text":"Why does the sign matter so much here?","label":"CONCEPTUAL"}
+{"text":"What does it mean physically when this value is negative?","label":"CONCEPTUAL"}
+{"text":"I don’t get what this constraint is really doing.","label":"CONCEPTUAL"}
+{"text":"Can you explain the idea behind recursion again?","label":"CONCEPTUAL"}
+{"text":"I’m stuck on the concept, not a specific problem.","label":"CONCEPTUAL"}
+{"text":"Why does randomness help here? That seems backwards.","label":"CONCEPTUAL"}
+{"text":"I don’t get why we switch methods halfway through.","label":"CONCEPTUAL"}
+{"text":"What’s the intuition for time complexity here?","label":"CONCEPTUAL"}
+{"text":"I’m confused about what the output actually represents.","label":"CONCEPTUAL"}
+{"text":"Why is this considered stable?","label":"CONCEPTUAL"}
+{"text":"I’m on this homework problem and not sure how to even start.","label":"HOMEWORK"}
+{"text":"For question 3, what’s the first step supposed to be?","label":"HOMEWORK"}
+{"text":"This problem from the assignment is confusing me.","label":"HOMEWORK"}
+{"text":"I don’t know which formula to use for this question.","label":"HOMEWORK"}
+{"text":"The homework says to analyze it but idk what that means.","label":"HOMEWORK"}
+{"text":"I’m stuck on part b of the problem.","label":"HOMEWORK"}
+{"text":"This question feels different from the examples, how do I approach it?","label":"HOMEWORK"}
+{"text":"What method are we supposed to use for this assignment?","label":"HOMEWORK"}
+{"text":"I’m working on the problem set and don’t know what they want.","label":"HOMEWORK"}
+{"text":"How do I break this problem down?","label":"HOMEWORK"}
+{"text":"This homework question is worded weird and I’m lost.","label":"HOMEWORK"}
+{"text":"For this problem, are we supposed to assume something?","label":"HOMEWORK"}
+{"text":"I don’t know how to start coding this homework.","label":"HOMEWORK"}
+{"text":"The assignment question is confusing me.","label":"HOMEWORK"}
+{"text":"What’s the general approach for problems like this one?","label":"HOMEWORK"}
+{"text":"I’m stuck on this problem from the worksheet.","label":"HOMEWORK"}
+{"text":"Do we solve this algebraically or numerically?","label":"HOMEWORK"}
+{"text":"This question is taking me forever and I’m not making progress.","label":"HOMEWORK"}
+{"text":"What’s the trick for this kind of problem?","label":"HOMEWORK"}
+{"text":"I’m not sure what the input/output is for this problem.","label":"HOMEWORK"}
+{"text":"The homework references something from lecture but I missed it.","label":"HOMEWORK"}
+{"text":"How do I even interpret what this question is asking?","label":"HOMEWORK"}
+{"text":"I’m confused about what they want me to compute.","label":"HOMEWORK"}
+{"text":"This problem seems way harder than the others.","label":"HOMEWORK"}
+{"text":"What topic is this question even testing?","label":"HOMEWORK"}
+{"text":"I don’t know what assumptions I’m allowed to make here.","label":"HOMEWORK"}
+{"text":"For this assignment problem, what should I focus on first?","label":"HOMEWORK"}
+{"text":"I’m stuck and the homework is due soon.","label":"HOMEWORK"}
+{"text":"How do you usually approach problems like this one?","label":"HOMEWORK"}
+{"text":"I feel like I’m missing something obvious in this problem.","label":"HOMEWORK"}
+{"text":"I tried solving it and got something but it feels wrong.","label":"CHECK_MY_WORK"}
+{"text":"Here’s what I did so far, does that make sense?","label":"CHECK_MY_WORK"}
+{"text":"I think my logic is off somewhere, can you check it?","label":"CHECK_MY_WORK"}
+{"text":"I’m not sure if my approach is valid.","label":"CHECK_MY_WORK"}
+{"text":"I worked through it but the result seems weird.","label":"CHECK_MY_WORK"}
+{"text":"Can you tell me if I’m on the right track?","label":"CHECK_MY_WORK"}
+{"text":"I tried one method and I’m not confident about it.","label":"CHECK_MY_WORK"}
+{"text":"Does my reasoning here make sense or did I mess up?","label":"CHECK_MY_WORK"}
+{"text":"I think I made an assumption that might be wrong.","label":"CHECK_MY_WORK"}
+{"text":"I got an answer but I don’t trust it.","label":"CHECK_MY_WORK"}
+{"text":"Here’s my thinking in words, is it correct?","label":"CHECK_MY_WORK"}
+{"text":"I’m worried I misunderstood the question in my solution.","label":"CHECK_MY_WORK"}
+{"text":"I tried following the example but adapted it, is that okay?","label":"CHECK_MY_WORK"}
+{"text":"I feel like my steps are right but the conclusion isn’t.","label":"CHECK_MY_WORK"}
+{"text":"Can you point out where my logic breaks?","label":"CHECK_MY_WORK"}
+{"text":"I attempted it but I’m not sure if it’s valid.","label":"CHECK_MY_WORK"}
+{"text":"Does this approach work in general or is it flawed?","label":"CHECK_MY_WORK"}
+{"text":"I’m not sure if I applied the theorem correctly.","label":"CHECK_MY_WORK"}
+{"text":"I tried to reason it out but might be missing a case.","label":"CHECK_MY_WORK"}
+{"text":"I got stuck halfway, is what I did so far okay?","label":"CHECK_MY_WORK"}
+{"text":"Can you sanity check my reasoning?","label":"CHECK_MY_WORK"}
+{"text":"I think I mixed up two steps in my solution.","label":"CHECK_MY_WORK"}
+{"text":"I followed my intuition but idk if that’s allowed.","label":"CHECK_MY_WORK"}
+{"text":"Is my interpretation of the result correct?","label":"CHECK_MY_WORK"}
+{"text":"I’m unsure if my logic holds for all cases.","label":"CHECK_MY_WORK"}
+{"text":"I think I answered it but I’m not confident.","label":"CHECK_MY_WORK"}
+{"text":"Does this look right conceptually?","label":"CHECK_MY_WORK"}
+{"text":"I might have overcomplicated it, thoughts?","label":"CHECK_MY_WORK"}
+{"text":"I’m worried there’s a flaw in my approach.","label":"CHECK_MY_WORK"}
+{"text":"Can you check if my steps make sense?","label":"CHECK_MY_WORK"}
+{"text":"What’s the answer to this question?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Can you just solve this for me?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I don’t need the explanation, just the result.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What do you get at the end?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Can you give me the final value?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I’m running out of time, what’s the answer?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Just tell me what it comes out to.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Can you finish this problem?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What’s the correct output supposed to be?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I tried but failed, can you do it?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I don’t care how, I just need the answer.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What am I supposed to get here?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Can you compute it for me?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What’s the solution to this?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Just give me the number.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What’s the final expression?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I’m stuck and just want the answer.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Can you tell me the correct answer so I can check?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What does this evaluate to?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I don’t understand any of it, what’s the answer?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Can you give me the solved version?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What should my final output be?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I need the answer for submission.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What’s the correct solution?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Just solve it please.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"Can you do the problem and tell me the result?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What’s the end result supposed to look like?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"I only need the final answer.","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What do I put down as the answer?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"What’s the right answer here?","label":"FINAL_ANSWER_REQUEST"}
+{"text":"How should I study for this midterm?","label":"STUDY_STRATEGY"}
+{"text":"I feel behind, how do I catch up?","label":"STUDY_STRATEGY"}
+{"text":"What’s the best way to practice this stuff?","label":"STUDY_STRATEGY"}
+{"text":"How do people usually prepare for exams in this class?","label":"STUDY_STRATEGY"}
+{"text":"Any tips for not panicking during problem solving?","label":"STUDY_STRATEGY"}
+{"text":"How much time should I spend on this topic?","label":"STUDY_STRATEGY"}
+{"text":"I’m studying but nothing is sticking, what do I do?","label":"STUDY_STRATEGY"}
+{"text":"Should I focus more on theory or problems?","label":"STUDY_STRATEGY"}
+{"text":"What’s a good way to review before the final?","label":"STUDY_STRATEGY"}
+{"text":"How do I know if I actually understand this?","label":"STUDY_STRATEGY"}
+{"text":"Any advice on managing time during exams?","label":"STUDY_STRATEGY"}
+{"text":"What’s the best order to study these topics?","label":"STUDY_STRATEGY"}
+{"text":"I keep blanking on exams, how can I fix that?","label":"STUDY_STRATEGY"}
+{"text":"How do I practice without just memorizing?","label":"STUDY_STRATEGY"}
+{"text":"What should I do when I get stuck studying alone?","label":"STUDY_STRATEGY"}
+{"text":"Is rereading notes enough or no?","label":"STUDY_STRATEGY"}
+{"text":"How do I study more efficiently?","label":"STUDY_STRATEGY"}
+{"text":"Any strategies for learning proofs?","label":"STUDY_STRATEGY"}
+{"text":"I don’t know how to tell what’s important.","label":"STUDY_STRATEGY"}
+{"text":"How early should I start studying for finals?","label":"STUDY_STRATEGY"}
+{"text":"What’s a good way to review old mistakes?","label":"STUDY_STRATEGY"}
+{"text":"How do I avoid making the same errors?","label":"STUDY_STRATEGY"}
+{"text":"What’s the best way to study coding problems?","label":"STUDY_STRATEGY"}
+{"text":"I feel overwhelmed, how should I prioritize?","label":"STUDY_STRATEGY"}
+{"text":"How do I know if I’m studying the right way?","label":"STUDY_STRATEGY"}
+{"text":"Any advice for staying focused while studying?","label":"STUDY_STRATEGY"}
+{"text":"Should I do more practice problems or review notes?","label":"STUDY_STRATEGY"}
+{"text":"What’s the most efficient way to prep for quizzes?","label":"STUDY_STRATEGY"}
+{"text":"How do I actually learn this instead of cramming?","label":"STUDY_STRATEGY"}
+{"text":"What do good students do differently when studying?","label":"STUDY_STRATEGY"}
+{"text":"Does this system save what I ask?","label":"OTHER"}
+{"text":"Can you explain how you work?","label":"OTHER"}
+{"text":"Why are you slow today?","label":"OTHER"}
+{"text":"Is this graded?","label":"OTHER"}
+{"text":"Can you remind me when the homework is due?","label":"OTHER"}
+{"text":"Are you allowed to help with this?","label":"OTHER"}
+{"text":"Why did you answer differently last time?","label":"OTHER"}
+{"text":"Is this the same as office hours?","label":"OTHER"}
+{"text":"Can you access my course materials?","label":"OTHER"}
+{"text":"Do you know my professor?","label":"OTHER"}
+{"text":"Is this going to affect my grade?","label":"OTHER"}
+{"text":"Can you tell me if this is cheating?","label":"OTHER"}
+{"text":"Why do you keep asking questions back?","label":"OTHER"}
+{"text":"Are you always correct?","label":"OTHER"}
+{"text":"Can you see my previous attempts?","label":"OTHER"}
+{"text":"Is this connected to my class website?","label":"OTHER"}
+{"text":"Why can’t you just answer directly sometimes?","label":"OTHER"}
+{"text":"Do you remember what I asked yesterday?","label":"OTHER"}
+{"text":"Are you like a real tutor?","label":"OTHER"}
+{"text":"Is this free to use?","label":"OTHER"}
