@@ -1,1 +1,1 @@
-tbd
+Totally cool raider tutor that wont tell you answers no matter how hard you try

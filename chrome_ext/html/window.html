@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>MSOE Raider Tutor</title>
+  <link rel="stylesheet" href="../css/window.css" />
+</head>
+<body>
+
+  <div class="window-header">
+    <div class="header-left">
+      <img src="../images/msoe_raiders.jpg" class="logo" />
+      <span>MSOE Raider Tutor</span>
+    </div>
+  </div>
+ 
+  <!-- later will be based on data -->
+  <div class="app">
+    <div class="sidebar">
+      <div class="chat-item" data-chat="MTH 2340">MTH 2340</div>
+      <div class="chat-item" data-chat="CSC 3320">CSC 3320</div>
+      <div class="chat-item" data-chat="CSC 2621">CSC 2621</div>
+      <div class="chat-item" data-chat="CSC 3210">CSC 3210</div>
+      <div class="chat-item" data-chat="PHL 3102">PHL 3102</div>
+    </div>
+
+    <div class="main">
+      <div id="messages" class="messages"></div>
+
+      <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask Raider tutor..." />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/window.js"></script>
+</body>
+</html>

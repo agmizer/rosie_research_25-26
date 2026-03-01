@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "MSOE Raider Tutor",
+  "version": "1.0",
+  "description": "Really cool raider tutor that wont tell you the answers no matter how hard a user tries.",
+  "permissions": ["windows", "storage"],
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "action": {},
+  "icons": 
+  {
+    "128": "images/msoe_logo.png"
+  }
+}
