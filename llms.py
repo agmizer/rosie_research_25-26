@@ -10,7 +10,6 @@ class BaseLLM:
         self.system_prompt = system_prompt
         self.max_new_tokens = max_new_tokens
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name)
 
     def _build_prompt(self, user_input: str) -> str:
         """Build a chat-style prompt. Override in subclasses if needed."""
