@@ -43,12 +43,10 @@ class Chunking:
 
     
 
-    def extract_text_from_tables(ppt_path, output_txt_path=None):
+    def extract_text_from_tables(presentation):
         """
         Extract text from all table shapes in all slides of the presentation.
         """
-        presentation = Presentation()
-        presentation.LoadFromFile(ppt_path)
 
         all_text = ""
         for slide_index, slide in enumerate(presentation.Slides):
@@ -74,12 +72,10 @@ class Chunking:
 
 
     
-    def extract_text_from_shapes(ppt_path, output_txt_path=None):
+    def extract_text_from_shapes(presentation):
         """
         Extract text from all individual and grouped shapes in all slides of the presentation.
         """
-        presentation = Presentation()
-        presentation.LoadFromFile(ppt_path)
 
         all_text = ""
         for index, slide in enumerate(presentation.Slides):
@@ -96,12 +92,10 @@ class Chunking:
     
 
     
-    def extract_speaker_notes(ppt_path, output_txt_path=None):
+    def extract_speaker_notes(ppt):
         """
         Extract speaker notes from all slides in the presentation.
         """
-        ppt = Presentation()
-        ppt.LoadFromFile(ppt_path)
 
         all_notes = ""
 
@@ -121,12 +115,10 @@ class Chunking:
 
 
 
-    def extract_text_from_smartart(ppt_path, output_txt_path=None):
+    def extract_text_from_smartart(presentation):
         """
         Extract text from all SmartArt graphics in all slides.
         """
-        presentation = Presentation()
-        presentation.LoadFromFile(ppt_path)
 
         all_text = ""
     
@@ -148,7 +140,21 @@ class Chunking:
 
         presentation.Dispose()
         return all_text
+    
+    def extract_all_content(ppt_path):
+        presentation = Presentation()
+        presentation.LoadFromFile(ppt_path)
 
+        all_content = ""
+
+        all_content += extract_text_from_shapes(presentation)
+        all_content += extract_text_from_tables(presentation)
+        all_content += extract_text_from_smartart(presentation)
+        all_content += extract_speaker_notes(presentation)
+
+        presentation.Dispose()
+
+        return all_content
 
 
 
@@ -162,7 +168,8 @@ class Chunking:
         return chunks
 
 def main():
-    print(Chunking.extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"))
+    #print(Chunking.extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"))
+    print(Chunking.extract_from_ppt("pdfs/Week1D1_Intro-1.pptx"))
 
 if __name__ == "__main__":
     main()
