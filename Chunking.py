@@ -10,14 +10,20 @@ class Chunking:
 
 
     def extract_text_from_pdf(path_to_pdf):
-        # creating a pdf reader object
         reader = PdfReader(path_to_pdf)
 
-        text = ""
-        for page in len(reader.pages)
-            page = reader.pages[0]
-            text += page.extract_text()
-        return text
+        pages = []
+
+        for page in reader.pages:
+            text = page.extract_text()
+            if text:
+                pages.append(text)
+
+        # this returns a single string for all the documents
+        # maybe look at langchain pdf reader so it is read as one document instead of as a string
+            # this helps keep tables and figures together also
+        return "\n".join(pages)  
+
 
     
     
@@ -155,4 +161,8 @@ class Chunking:
             i += max_words - overlap
         return chunks
 
-        
+ def main():
+    print(extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"))
+
+if __name__ == "__main__":
+    main()
