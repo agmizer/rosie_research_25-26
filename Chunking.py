@@ -1,4 +1,4 @@
-#from spire.presentation import *
+from spire.presentation import *
 from pypdf import PdfReader
 
 
@@ -21,7 +21,7 @@ class Chunking:
 
         # this returns a single string for all the documents
         # maybe look at langchain pdf reader so it is read as one document instead of as a string
-            # this helps keep tables and figures together also
+            # this helps keep tables and figures together also right now does not keep tables intact
         return "\n".join(pages)  
 
 
