@@ -1,4 +1,4 @@
-from spire.presentation import *
+#from spire.presentation import *
 from pypdf import PdfReader
 
 
@@ -28,18 +28,18 @@ class Chunking:
     
     
     def extract_text_from_shape(shape):
-    """
-    Extract text from an individual shape or grouped shapes.
-    """
-    text = ""
-    if isinstance(shape, IAutoShape):
-        if shape.TextFrame is not None:
-            for para in shape.TextFrame.Paragraphs:
-                text += para.Text + "\n"
-    elif isinstance(shape, GroupShape):
-        for sub_shape in shape.Shapes:
-            text += extract_text_from_shape(sub_shape)
-    return text
+        """
+        Extract text from an individual shape or grouped shapes.
+        """
+        text = ""
+        if isinstance(shape, IAutoShape):
+            if shape.TextFrame is not None:
+                for para in shape.TextFrame.Paragraphs:
+                    text += para.Text + "\n"
+        elif isinstance(shape, GroupShape):
+            for sub_shape in shape.Shapes:
+                text += extract_text_from_shape(sub_shape)
+        return text
 
     
 
@@ -161,8 +161,8 @@ class Chunking:
             i += max_words - overlap
         return chunks
 
- def main():
-    print(extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"))
+def main():
+    print(Chunking.extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"))
 
 if __name__ == "__main__":
     main()
