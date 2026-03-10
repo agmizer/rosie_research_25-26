@@ -1,37 +1,32 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
 import json
-
+from openai import OpenAI
 
 class BaseLLM:
-    """Base class that handles model loading and text generation."""
+    """Base class that handles model calls via OpenAI-compatible API."""
 
-    def __init__(self, model_name: str, system_prompt: str, max_new_tokens: int = 512):
+    def __init__(self, model_name: str, system_prompt: str, max_new_tokens: int = 200):
         self.model_name = model_name
         self.system_prompt = system_prompt
         self.max_new_tokens = max_new_tokens
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    def _build_prompt(self, user_input: str) -> str:
-        """Build a chat-style prompt. Override in subclasses if needed."""
-        return (
-            f"### System:\n{self.system_prompt}\n\n"
-            f"### User:\n{user_input}\n\n"
-            f"### Assistant:\n"
+        self.client = OpenAI(
+            base_url="http://dh-dgxh100-2.hpc.msoe.edu:8001/v1",
+            api_key="unused"
         )
 
     def generate(self, user_input: str) -> str:
-        """Tokenize, generate, and decode a response."""
-        prompt = self._build_prompt(user_input)
-        inputs = self.tokenizer(prompt, return_tensors="pt")
-        outputs = self.model.generate(
-            **inputs,
-            max_new_tokens=self.max_new_tokens,
-            do_sample=True,
+        """Send request to the chat completion API."""
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {"role": "system", "content": self.system_prompt},
+                {"role": "user", "content": user_input},
+            ],
+            max_tokens=self.max_new_tokens,
             temperature=0.7,
         )
-        # Decode only the newly generated tokens
-        new_tokens = outputs[0][inputs["input_ids"].shape[1]:]
-        return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+        return response.choices[0].message.content.strip()
 
 
 class TutorLLM(BaseLLM):
