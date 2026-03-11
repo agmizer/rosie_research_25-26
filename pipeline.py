@@ -1,8 +1,10 @@
-from tutor_llms import TutorLLM, VerifierLLM, EvaluatorLLM
+from llms import TutorLLM, VerifierLLM, EvaluatorLLM
 
 
-MODEL_NAME = "your-model-name-here"
+MODEL_NAME = "meta/llama-4-scout-17b-16e-instruct"
 MAX_VERIFIER_RETRIES = 3
+
+# only for testing, not necessary for the final implementation
 MAX_CONVERSATION_TURNS = 5
 
 
@@ -13,6 +15,7 @@ def main():
     evaluator = EvaluatorLLM(model_name=MODEL_NAME)
 
     # Simulated user queries (one per conversation turn)
+    """
     user_queries = [
         "What is the derivative of x^2 + 3x + 5?",
         "I think you just multiply the exponent down, right?",
@@ -20,13 +23,19 @@ def main():
         "What happens to the constant 5?",
         "So the final answer is 2x + 3?",
     ]
+    """
+
 
     conversation = []
     turn = 0
 
     # --- Conversation loop ---
-    while turn < MAX_CONVERSATION_TURNS and turn < len(user_queries):
-        user_query = user_queries[turn] # Get user input
+    while turn < MAX_CONVERSATION_TURNS:
+
+        user_query = input("Student: ")
+
+        if user_query.lower() in ["exit", "quit"]:
+            break
 
         # Build the context object (placeholder for prompt building step)
         context = {
@@ -53,7 +62,6 @@ def main():
                 "What do you already know about this topic?"
             )
 
-        print(f"Student: {user_query}")
         print(f"Tutor:   {tutor_response}\n")
 
         # Append this turn to the conversation log
