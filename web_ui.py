@@ -1,7 +1,7 @@
 import json
 import queue
 import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
 _HTML = """<!DOCTYPE html>
@@ -155,6 +155,19 @@ MathJax = {
 let after = 0;
 let waitingForTutor = false;
 
+function formatMessage(text) {
+  // Escape HTML to prevent injection (browser unescapes in text nodes, so MathJax still sees raw chars)
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // **bold** → <strong>
+  html = html.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');
+  // newlines → <br>
+  html = html.replace(/\\n/g, '<br>');
+  return html;
+}
+
 function showTyping(on) {
   document.getElementById('typing-row').style.display = on ? 'flex' : 'none';
   document.getElementById('send-btn').disabled = on;
@@ -191,7 +204,7 @@ function appendMessage(msg) {
 
   const bubble = document.createElement('div');
   bubble.className = `bubble ${msg.role}`;
-  bubble.textContent = msg.content;
+  bubble.innerHTML = formatMessage(msg.content);
 
   row.appendChild(avatar);
   row.appendChild(bubble);
@@ -201,7 +214,7 @@ function appendMessage(msg) {
 
 async function poll() {
   try {
-    const res = await fetch(`/api/messages?after=${after}`);
+    const res = await fetch(`api/messages?after=${after}`);
     const msgs = await res.json();
     const toTypeset = [];
     for (const msg of msgs) {
@@ -237,7 +250,7 @@ async function send() {
   waitingForTutor = true;
   showTyping(true);
 
-  await fetch('/api/send', {
+  await fetch('api/send', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({message: text})
@@ -265,10 +278,10 @@ class _Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
-        if parsed.path == "/":
+        if parsed.path in ("/", "/index.html"):
             body = _HTML.encode()
             self._respond(200, "text/html; charset=utf-8", body)
-        elif parsed.path == "/api/messages":
+        elif parsed.path in ("/api/messages", "api/messages"):
             params = parse_qs(parsed.query)
             after = int(params.get("after", ["0"])[0])
             body = json.dumps(self.ui._get_messages(after)).encode()
@@ -277,11 +290,16 @@ class _Handler(BaseHTTPRequestHandler):
             self._respond(404, "text/plain", b"Not found")
 
     def do_POST(self):
-        if self.path == "/api/send":
-            length = int(self.headers.get("Content-Length", 0))
-            data = json.loads(self.rfile.read(length))
-            self.ui.input_queue.put(data["message"])
-            self._respond(200, "application/json", b'{"ok":true}')
+        if self.path in ("/api/send", "api/send"):
+            try:
+                length = int(self.headers.get("Content-Length", 0))
+                body = self.rfile.read(length) if length else self.rfile.read()
+                data = json.loads(body)
+                self.ui.input_queue.put(data["message"])
+                self._respond(200, "application/json", b'{"ok":true}')
+            except Exception as e:
+                print(f"[http] do_POST error: {e}", flush=True)
+                self._respond(500, "text/plain", str(e).encode())
         else:
             self._respond(404, "text/plain", b"Not found")
 
@@ -306,7 +324,7 @@ class WebUI:
         def handler_factory(*args, **kwargs):
             return _Handler(self, *args, **kwargs)
 
-        self._server = HTTPServer(("0.0.0.0", port), handler_factory)
+        self._server = ThreadingHTTPServer(("0.0.0.0", port), handler_factory)
         self.port = self._server.server_address[1]
 
     def add_message(self, role, content):

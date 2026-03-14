@@ -36,6 +36,7 @@ def main():
     while turn < MAX_CONVERSATION_TURNS:
 
         user_query = ui.input_queue.get()   # blocks until student sends a message
+        print(f"[pipeline] received: {user_query!r}")
 
         if user_query.lower() in ["exit", "quit"]:
             break
@@ -53,7 +54,7 @@ def main():
 
         while not verified and attempts < MAX_VERIFIER_RETRIES:
             tutor_response = tutor.respond(context)
-            print("---Tutor Pre-Verified Response---")
+            print("\n---Tutor Pre-Verified Response---")
             print(tutor_response)
 
             result = verifier.verify(user_query, tutor_response)
@@ -62,7 +63,7 @@ def main():
 
             # Add to context why the tutor was not verified
             context["verifier_feedback"] = result["reason"]
-            print(f"---Verifier Feedback {attempts}---")
+            print(f"\n---Verifier Feedback {attempts}---")
             print(result["reason"])
 
         # Fall back to a safe generic response if verifier never passed
@@ -83,7 +84,7 @@ def main():
     # --- Evaluate the full conversation ---
     evaluation = evaluator.evaluate(conversation)
 
-    print("--- Evaluation ---")
+    print("\n--- Evaluation ---")
     for category, grade in evaluation["grades"].items():
         print(f"  {category}: {grade}")
 

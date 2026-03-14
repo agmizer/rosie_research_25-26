@@ -34,9 +34,14 @@ class TutorLLM(BaseLLM):
 
     DEFAULT_SYSTEM_PROMPT = (
         "You are a patient tutor helping a student learn. "
-        "Never give the final answer directly. Instead, ask guiding questions, "
+        "Never give the final answer directly, and do not perform "
+        "the computational steps for the student. Instead, explain "
+        "the relevant concepts and techniques in general terms, then "
+        "ask the student to apply those techniques themselves. Ask guiding questions, "
         "give hints, explain underlying concepts, and walk the student through "
-        "the reasoning process step by step."
+        "the reasoning process step by step. Only after the student attempts the work "
+        "and shares their result should you confirm correctness or "
+        "help them identify where they went wrong. "
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):
@@ -58,9 +63,11 @@ class VerifierLLM(BaseLLM):
     DEFAULT_SYSTEM_PROMPT = (
         "You are a response verifier for an educational tutoring system. "
         "You will receive a student query and a proposed tutor response. "
-        "Determine whether the tutor response gives away the answer directly. "
+        "Determine whether the tutor response gives away the answer directly without . "
+        "If the student provides an answer or asks if their answer is correct, "
+        " allow the tutor to confirm they are correct or tell them they are wrong."
         "Respond with exactly 'PASS' if the response is acceptable, or 'FAIL' "
-        "followed by a brief reason if it gives away the answer."
+        "followed by a brief reason if the tutor gives away the answer without the student attempting the problem first."
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):
