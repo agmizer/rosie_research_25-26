@@ -1,4 +1,5 @@
 from llms import TutorLLM, VerifierLLM, EvaluatorLLM
+from web_ui import WebUI
 
 
 MODEL_NAME = "meta/llama-4-scout-17b-16e-instruct"
@@ -9,8 +10,11 @@ MAX_CONVERSATION_TURNS = 5
 
 
 def main():
+    ui = WebUI()   # port=0 → OS picks a free port; pass e.g. WebUI(port=8080) for a fixed port
+    ui.start()     # prints the URL, starts HTTP server in background thread
+
     # Initialize the three LLMs
-    tutor = TutorLLM(model_name=MODEL_NAME)
+    tutor = TutorLLM(model_name=MODEL_NAME, max_new_tokens=500)
     verifier = VerifierLLM(model_name=MODEL_NAME)
     evaluator = EvaluatorLLM(model_name=MODEL_NAME)
 
@@ -25,14 +29,13 @@ def main():
     ]
     """
 
-
     conversation = []
     turn = 0
 
     # --- Conversation loop ---
     while turn < MAX_CONVERSATION_TURNS:
 
-        user_query = input("Student: ")
+        user_query = ui.input_queue.get()   # blocks until student sends a message
 
         if user_query.lower() in ["exit", "quit"]:
             break
@@ -40,7 +43,7 @@ def main():
         # Build the context object (placeholder for prompt building step)
         context = {
             "student_query": user_query,
-            "subject": "calculus",
+            "verifier_feedback": None,
             "conversation_history": conversation,
         }
 
@@ -50,10 +53,17 @@ def main():
 
         while not verified and attempts < MAX_VERIFIER_RETRIES:
             tutor_response = tutor.respond(context)
+            print("---Tutor Pre-Verified Response---")
+            print(tutor_response)
+
             result = verifier.verify(user_query, tutor_response)
             verified = result["passed"]
             attempts += 1
-            # Add to context, why the tutor was not verified
+
+            # Add to context why the tutor was not verified
+            context["verifier_feedback"] = result["reason"]
+            print(f"---Verifier Feedback {attempts}---")
+            print(result["reason"])
 
         # Fall back to a safe generic response if verifier never passed
         if not verified:
@@ -62,7 +72,7 @@ def main():
                 "What do you already know about this topic?"
             )
 
-        print(f"Tutor:   {tutor_response}\n")
+        ui.add_message("tutor", tutor_response)
 
         # Append this turn to the conversation log
         conversation.append({"role": "student", "content": user_query})
@@ -76,6 +86,16 @@ def main():
     print("--- Evaluation ---")
     for category, grade in evaluation["grades"].items():
         print(f"  {category}: {grade}")
+
+    ui.add_message("eval", evaluation["grades"])
+
+    # Keep the server alive so the user can read the evaluation in the browser
+    print("\n  Conversation complete. Press Ctrl+C to exit.\n")
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == "__main__":

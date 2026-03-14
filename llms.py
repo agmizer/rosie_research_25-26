@@ -78,7 +78,7 @@ class VerifierLLM(BaseLLM):
         )
         raw = self.generate(user_input)
         passed = raw.upper().startswith("PASS")
-        return {"passed": passed, "raw": raw}
+        return {"passed": passed, "reason": raw}
 
 
 class EvaluatorLLM(BaseLLM):
