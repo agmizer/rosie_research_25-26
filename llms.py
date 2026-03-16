@@ -14,13 +14,13 @@ class BaseLLM:
             api_key="unused"
         )
 
-    def generate(self, user_input: str) -> str:
+    def generate(self, LLM_input: str) -> str:
         """Send request to the chat completion API."""
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[
                 {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": user_input},
+                {"role": "user", "content": LLM_input},
             ],
             max_tokens=self.max_new_tokens,
             temperature=0.7,
@@ -35,13 +35,7 @@ class TutorLLM(BaseLLM):
     DEFAULT_SYSTEM_PROMPT = (
         "You are a patient tutor helping a student learn. "
         "Never give the final answer directly, and do not perform "
-        "the computational steps for the student. Instead, explain "
-        "the relevant concepts and techniques in general terms, then "
-        "ask the student to apply those techniques themselves. Ask guiding questions, "
-        "give hints, explain underlying concepts, and walk the student through "
-        "the reasoning process step by step. Only after the student attempts the work "
-        "and shares their result should you confirm correctness or "
-        "help them identify where they went wrong. "
+        "the computational steps for the student. "
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):
@@ -79,12 +73,12 @@ class VerifierLLM(BaseLLM):
 
     def verify(self, student_query: str, tutor_response: str) -> dict:
         """Return {'passed': bool, 'reason': str}."""
-        user_input = (
+        verifier_input = (
             f"Student query: {student_query}\n\n"
             f"Tutor response: {tutor_response}"
         )
-        raw = self.generate(user_input)
-        passed = raw.upper().startswith("PASS")
+        raw = self.generate(verifier_input)
+        passed = "PASS" in raw.upper()
         return {"passed": passed, "reason": raw}
 
 
