@@ -75,6 +75,13 @@ MathJax = {
     box-shadow: 0 1px 2px rgba(0,0,0,.12);
     color: #111;
   }
+  .bubble h1, .bubble h2, .bubble h3 {
+    margin: 8px 0 4px 0;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
   .bubble.student {
     background: #1a73e8;
     border-bottom-right-radius: 4px;
@@ -163,6 +170,10 @@ function formatMessage(text) {
     .replace(/>/g, '&gt;');
   // **bold** → <strong>
   html = html.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');
+  // Markdown headings: ### h3, ## h2, # h1 (must check longer prefixes first)
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
   // newlines → <br>
   html = html.replace(/\\n/g, '<br>');
   return html;
