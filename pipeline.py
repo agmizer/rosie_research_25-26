@@ -1,11 +1,5 @@
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "UserQueryClassification"))
-
-from llms import TutorLLM, VerifierLLM, EvaluatorLLM
+from llms import TutorLLM, VerifierLLM, EvaluatorLLM, ClassifierLLM
 from web_ui import WebUI
-from Query_Classifier import QueryClassifier
 from context import TutorContext, VerifierContext
 
 
@@ -20,11 +14,8 @@ def main():
     ui = WebUI()   # port=0 → OS picks a free port; pass e.g. WebUI(port=8080) for a fixed port
     ui.start()     # prints the URL, starts HTTP server in background thread
 
-    # Train the query classifier once at startup (~5 seconds)
-    classifier = QueryClassifier()
-    classifier.fit(os.path.join(os.path.dirname(__file__), "UserQueryClassification", "queries.jsonl"))
-
-    # Initialize the three LLMs
+    # Initialize the LLMs
+    classifier = ClassifierLLM(model_name=MODEL_NAME)
     tutor = TutorLLM(model_name=MODEL_NAME, max_new_tokens=500)
     verifier = VerifierLLM(model_name=MODEL_NAME)
     evaluator = EvaluatorLLM(model_name=MODEL_NAME)
@@ -47,13 +38,13 @@ def main():
     while turn < MAX_CONVERSATION_TURNS:
 
         user_query = ui.input_queue.get()   # blocks until student sends a message
-        print(f"[pipeline] received: {user_query!r}")
+        print(f"\n[pipeline] received: {user_query!r}")
 
         if user_query.lower() in ["exit", "quit"]:
             break
 
         # Classify the query and build the context object
-        query_type, query_confidence = classifier.predict(user_query)
+        query_type, reasoning = classifier.classify(user_query, conversation_history=conversation)
 
         tutor_context = TutorContext(
             student_query=user_query,
@@ -63,7 +54,7 @@ def main():
 
         print("\n---Query Classification---")
         print(f"Query Type: {query_type}")
-        print(f"Query Classification Confidence: {query_confidence}")
+        print(f"Reasoning: {reasoning}")
 
 
         # ----------- Tutor + Verifier loop -----------
@@ -81,6 +72,7 @@ def main():
                 conversation_history=conversation,
                 tutor_response=tutor_response,
             )
+
             result = verifier.verify(verifier_context)
             verified = result["passed"]
             attempts += 1

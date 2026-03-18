@@ -3,53 +3,55 @@ from dataclasses import dataclass, field
 
 # Additional guidance injected into the tutor context based on classified query type
 TUTOR_QUERY_TYPE_GUIDANCE = {
-    "HOMEWORK": (
-        "The student is working on an assignment. "
-        "Do not do their work for them. Break it into smaller steps, "
-        "ask what they have tried so far, and guide them toward the "
-        "answer through questions and hints."
+    "NEEDS_GUIDANCE": (
+        "The student has a problem but has not started working on it yet. "
+        "Ask what they already know about the topic, then guide them to "
+        "identify a first step. Do not solve the problem or jump ahead — "
+        "help them find an entry point on their own. "
+        "After responding, ask the student to take the next step themselves."
+    ),
+    "STUCK": (
+        "The student has started working but is stuck on a specific step. "
+        "Acknowledge the progress they have made so far. Give a targeted "
+        "hint or ask a guiding question about the specific step where they "
+        "are stuck. Do not complete the step for them or jump ahead to "
+        "later steps. "
+        "After responding, ask the student to take the next step themselves."
     ),
     "CHECK_MY_WORK": (
-        "The student wants you to check their work. "
-        "Examine what they have submitted. If it is correct, affirm it "
-        "and move on. Do not redo their work if they are correct. "
-        "If it is wrong, do not give the correct answer — instead identify "
-        "the specific mistake and ask a guiding question that helps them "
-        "find the error themselves."
-    ),
-    "FINAL_ANSWER_REQUEST": (
-        "The student is asking you to provide the answer directly. "
-        "Decline to do so. Redirect them by asking what they have "
-        "completed so far, and guide them through the remaining "
-        "reasoning needed to reach the answer on their own."
+        "The student is presenting work they have done and wants confirmation. "
+        "If their work is correct, affirm it clearly and ask them to take "
+        "the next step themselves. If their work is wrong, point to the "
+        "specific error without giving the correct answer — ask a guiding "
+        "question that helps them find the mistake."
     ),
     "CONCEPTUAL": (
-        "The student has a conceptual question. "
-        "Explain the underlying concept clearly using plain language and examples. "
-        "Encourage them to connect the concept to what they already know, and ask "
-        "a follow-up question to check their understanding."
+        "The student wants to understand a concept, not solve a specific problem. "
+        "Explain the concept clearly using plain language and examples. "
+        "You do not need to quiz the student — just answer their question clearly."
     ),
-    "STUDY_STRATEGY": (
-        "The student is asking for study advice. "
-        "Offer concrete, evidence-based strategies relevant to the subject matter "
-        "(e.g., spaced repetition, practice problems, summarising in their own words). "
-        "Encourage active learning over passive review."
-    ),
-    "OTHER": (
-        "The student's request does not fit a standard category. "
-        "Respond helpfully and redirect toward learning goals where possible. "
-        "If the query is off-topic, gently bring the conversation back to the subject."
+    "OFF_TASK": (
+        "The student is asking about study strategies, making small talk, "
+        "or asking something unrelated to a specific problem. Respond "
+        "helpfully and naturally. If appropriate, gently guide the "
+        "conversation back toward learning goals."
     ),
 }
 
 # Guidance for the verifier based on classified query type
 VERIFIER_QUERY_TYPE_GUIDANCE = {
-    "HOMEWORK": (
-        "The student is working on an assignment. The tutor should NOT "
-        "produce the solution or complete significant steps for the student. "
-        "The tutor MAY explain general concepts, definitions, or formulas "
-        "needed to approach the problem. FAIL only if the tutor does work "
-        "the student has not attempted."
+    "NEEDS_GUIDANCE": (
+        "The student has not started working yet. The tutor should NOT "
+        "produce the solution or complete significant steps. The tutor "
+        "MAY explain general concepts, definitions, or formulas needed "
+        "to approach the problem. FAIL only if the tutor does work the "
+        "student has not attempted."
+    ),
+    "STUCK": (
+        "The student has started working and is stuck on a specific step. "
+        "The tutor MAY give a hint about the step where the student is stuck. "
+        "FAIL only if the tutor completes the stuck step for the student or "
+        "jumps ahead to solve later steps they have not attempted."
     ),
     "CHECK_MY_WORK": (
         "The student is presenting work they have already done and asking "
@@ -59,28 +61,16 @@ VERIFIER_QUERY_TYPE_GUIDANCE = {
         "FAIL only if the tutor goes beyond what was asked and completes "
         "additional steps the student has not attempted."
     ),
-    "FINAL_ANSWER_REQUEST": (
-        "The student is asking for the answer directly. The tutor should "
-        "decline and redirect toward guided learning. FAIL if the tutor "
-        "provides the complete answer. PASS if the tutor redirects the "
-        "student to work through it themselves."
-    ),
     "CONCEPTUAL": (
         "The student is asking about a concept. The tutor MAY explain "
         "concepts, definitions, and general principles fully — this is "
         "expected and should PASS. FAIL only if the tutor solves a "
         "specific problem the student has not attempted."
     ),
-    "STUDY_STRATEGY": (
-        "The student is asking for study advice. The tutor MAY offer "
-        "concrete strategies and recommendations. This query type is "
-        "unlikely to warrant a FAIL unless the tutor does unrelated "
-        "work for the student."
-    ),
-    "OTHER": (
-        "The student's request does not fit a standard category. "
-        "Apply general judgment: FAIL if the tutor does the student's "
-        "work for them, PASS otherwise."
+    "OFF_TASK": (
+        "The student is not working on a problem. Apply general judgment: "
+        "FAIL if the tutor does the student's work for them, PASS otherwise. "
+        "This query type is unlikely to warrant a FAIL."
     ),
 }
 
@@ -111,7 +101,7 @@ class TutorContext(BaseContext):
     @property
     def query_type_guidance(self) -> str:
         """Look up tutor-specific guidance from the query type."""
-        return TUTOR_QUERY_TYPE_GUIDANCE.get(self.query_type, TUTOR_QUERY_TYPE_GUIDANCE["OTHER"])
+        return TUTOR_QUERY_TYPE_GUIDANCE.get(self.query_type, TUTOR_QUERY_TYPE_GUIDANCE["OFF_TASK"])
 
     def to_system_prompt(self) -> str:
         """Build dynamic system prompt content from context fields."""
@@ -144,7 +134,7 @@ class VerifierContext(BaseContext):
     @property
     def query_type_guidance(self) -> str:
         """Look up verifier-specific guidance from the query type."""
-        return VERIFIER_QUERY_TYPE_GUIDANCE.get(self.query_type, VERIFIER_QUERY_TYPE_GUIDANCE["OTHER"])
+        return VERIFIER_QUERY_TYPE_GUIDANCE.get(self.query_type, VERIFIER_QUERY_TYPE_GUIDANCE["OFF_TASK"])
 
     def to_system_prompt(self) -> str:
         """Build system prompt with conversation history, student query, and query type."""
