@@ -4,7 +4,7 @@ from context import TutorContext, VerifierContext
 
 
 MODEL_NAME = "meta/llama-4-scout-17b-16e-instruct"
-MAX_VERIFIER_RETRIES = 3
+MAX_VERIFIER_RETRIES = 5
 
 # only for testing, not necessary for the final implementation
 MAX_CONVERSATION_TURNS = 5
@@ -44,16 +44,16 @@ def main():
             break
 
         # Classify the query and build the context object
-        query_type, reasoning = classifier.classify(user_query, conversation_history=conversation)
+        teaching_mode, reasoning = classifier.classify(user_query, conversation_history=conversation)
 
         tutor_context = TutorContext(
             student_query=user_query,
-            query_type=query_type,
+            teaching_mode=teaching_mode,
             conversation_history=conversation,
         )
 
-        print("\n---Query Classification---")
-        print(f"Query Type: {query_type}")
+        print("\n---Teaching Mode Classification---")
+        print(f"Teaching Mode: {teaching_mode}")
         print(f"Reasoning: {reasoning}")
 
 
@@ -68,7 +68,7 @@ def main():
 
             verifier_context = VerifierContext(
                 student_query=user_query,
-                query_type=query_type,
+                teaching_mode=teaching_mode,
                 conversation_history=conversation,
                 tutor_response=tutor_response,
             )
@@ -77,8 +77,12 @@ def main():
             verified = result["passed"]
             attempts += 1
 
-            # Add to tutor context why the response was not verified
-            tutor_context.verifier_feedback = result["reason"]
+            if not verified:
+                tutor_context.rejected_attempts.append({
+                    "response": tutor_response,
+                    "reason": result["reason"],
+                })
+
             print(f"\n---Verifier Feedback {attempts}---")
             print(result["reason"])
 

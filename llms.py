@@ -3,7 +3,7 @@ import re
 from openai import OpenAI
 from context import TutorContext, VerifierContext
 
-VALID_QUERY_TYPES = {"NEEDS_GUIDANCE", "STUCK", "CHECK_MY_WORK", "CONCEPTUAL", "OFF_TASK"}
+VALID_TEACHING_MODES = {"EXPLAIN", "GUIDE", "CONFIRM", "REDIRECT"}
 
 class BaseLLM:
     """Base class that handles model calls via OpenAI-compatible API."""
@@ -64,36 +64,16 @@ class VerifierLLM(BaseLLM):
 
     DEFAULT_SYSTEM_PROMPT = (
         "You are a response verifier for an educational tutoring system. "
-        "You will receive a student query and a proposed tutor response. "
-        "Your job is to determine whether the tutor produced the student's "
-        "deliverable for them — the thing the student is supposed to create "
-        "or figure out themselves.\n\n"
-        "What counts as a deliverable depends on the task:\n"
-        "- Writing assignments: the paragraph, essay, or written response\n"
-        "- Math/science problems: the computed answer or worked solution\n"
-        "- Coding tasks: the code the student is supposed to write\n"
-        "- Analysis tasks: the argument, thesis, or synthesis\n\n"
-        "FAIL if the tutor produced the complete, assembled deliverable "
-        "before the student attempted it themselves. The deliverable is "
-        "the finished output — the written paragraph, the final computed "
-        "answer, the working code — not the individual concepts or ideas "
-        "that go into it.\n\n"
-        "Mentioning or listing relevant concepts, terms, or ideas within a guiding "
-        "question is NOT producing the deliverable. A tutor must reference "
-        "the topic to ask useful questions. For example, asking 'What do "
-        "you think about the role of poverty in crime?' mentions a relevant "
-        "concept but does not produce the student's paragraph.\n\n"
-        "PASS if the tutor did any of the following:\n"
-        "- Explained facts, definitions, concepts, or background information\n"
-        "- Mentioned or listed relevant ideas or terms within guiding questions\n"
-        "- Listed relevant ideas or considerations without completing the deliverable\n"
-        "- Asked guiding questions to help the student think\n"
-        "- Confirmed or corrected work the student already did\n"
-        "- Gave hints or pointed the student toward the next step\n\n"
-        "IMPORTANT: Use the conversation history to judge whether the student "
-        "has already done the work. If the student arrived at a result through "
-        "their own effort and is presenting it for confirmation, the tutor "
-        "confirming or correcting it should PASS.\n\n"
+        "You will receive a student query, a teaching mode, and a proposed "
+        "tutor response.\n\n"
+        "FAIL only if the tutor produced the complete, assembled deliverable "
+        "that the student is supposed to create themselves — the finished "
+        "paragraph, the worked solution, the written response. Everything "
+        "else is a PASS.\n\n"
+        "IMPORTANT: Evaluate against the CURRENT student message and teaching "
+        "mode, not the original task from earlier in the conversation. The "
+        "teaching mode defines what the tutor should be doing right now. "
+        "Follow the teaching mode guidance closely.\n\n"
         "Respond with exactly 'PASS' if the response is acceptable, or 'FAIL' "
         "followed by a brief reason."
     )
@@ -178,57 +158,55 @@ class EvaluatorLLM(BaseLLM):
 
 
 class ClassifierLLM(BaseLLM):
-    """Classifies student queries by where the student is in their problem-solving process."""
+    """Classifies student queries into a teaching mode that tells the tutor how to respond."""
 
     DEFAULT_SYSTEM_PROMPT = (
-        "You are a student query classifier for an educational tutoring system. "
+        "You are a teaching mode classifier for an educational tutoring system. "
         "Given a student's message and optionally the conversation history, "
-        "classify the query into exactly one of the following categories.\n\n"
-        "Categories:\n\n"
-        "NEEDS_GUIDANCE — The student has a problem or question but has not started "
-        "working on it yet. They need help figuring out where to begin. "
-        "This includes requests where the student asks the tutor to produce a "
-        "deliverable such as writing a paragraph, answering a prompt, or solving "
-        "a problem — even if the topic of the deliverable is conceptual.\n"
-        "Examples:\n"
-        '  - "Can you help me with this question: what is the gradient of z = 5y^4 + 3x^2 + 2y?"\n'
-        '  - "I have no idea how to approach this essay prompt about the causes of WWI"\n'
-        '  - "How do I start this problem?"\n'
-        '  - "Answer this question in 2-3 sentences: What are the environmental contributions to criminality?"\n\n'
-        "STUCK — The student has started working but is stuck on a specific step or part. "
-        "They have made some progress and need help moving forward.\n"
-        "Examples:\n"
-        '  - "I found dz/dx but I don\'t know how to find dz/dy"\n'
-        '  - "I wrote my thesis statement but I\'m not sure what evidence to use in the second paragraph"\n'
-        '  - "I got to this step but I don\'t know what to do next"\n\n'
-        "CHECK_MY_WORK — The student has done work and is presenting it for confirmation "
-        "or correction. They want to know if what they did is right.\n"
-        "Examples:\n"
-        '  - "I got dz/dx = 6x, is that right?"\n'
-        '  - "Is the answer (6x, 20y^3 + 2)?"\n'
-        '  - "I think the theme of the poem is isolation, does that make sense?"\n\n'
-        "CONCEPTUAL — The student wants to understand a concept, definition, or idea. "
-        "They are not trying to solve a specific problem or produce a deliverable. "
-        "If the student is asking the tutor to write, answer, or solve something "
-        "specific (e.g., 'answer this prompt', 'write a paragraph about'), "
-        "classify as NEEDS_GUIDANCE instead.\n"
+        "decide which teaching strategy the tutor should use. Classify into "
+        "exactly one of the following modes.\n\n"
+        "Modes:\n\n"
+        "EXPLAIN — The student wants to understand a concept, definition, or idea, "
+        "or is confused about something and needs it explained or re-explained. "
+        "The tutor should teach directly with clear explanations and examples. "
+        "If the student is confused, try a different angle or analogy.\n"
         "Examples:\n"
         '  - "What is a gradient conceptually?"\n'
-        '  - "I don\'t understand what partial derivatives mean"\n'
-        '  - "Can you explain the difference between mitosis and meiosis?"\n\n'
-        "OFF_TASK — The student is asking about study strategies, making small talk, "
-        "asking meta questions about the system, or anything else unrelated to solving "
-        "a specific problem or understanding a concept.\n"
+        '  - "I don\'t understand what you mean by the chain rule"\n\n'
+        "GUIDE — The student is working through a problem and needs help moving "
+        "forward. The tutor should ask guiding questions and give hints, not "
+        "solve the problem for them.\n"
+        "Examples:\n"
+        '  - "Write a paragraph explaining the role of supply and demand in pricing"\n'
+        '  - "Can you help me with this problem: what is the gradient of z = 5y^4 + 3x^2 + 2y?"\n\n'
+        "CONFIRM — The student has done work and is presenting it to check if "
+        "it is correct. The tutor should validate or point to errors.\n"
+        "Examples:\n"
+        '  - "I got dz/dx = 6x, is that right?"\n'
+        '  - "I think the theme of the poem is isolation, does that make sense?"\n\n'
+        "REDIRECT — The student is off-topic: small talk, study strategies, or "
+        "questions unrelated to the subject. The tutor should respond briefly and "
+        "steer back toward learning.\n"
         "Examples:\n"
         '  - "How should I study for the midterm?"\n'
-        '  - "Hello"\n'
-        '  - "Does this system save my chat history?"\n\n'
+        '  - "Hello"\n\n'
+        "IMPORTANT: If the student's message reads like an assignment question "
+        "or homework prompt — asking the tutor to produce, write, or complete "
+        "a specific output — classify as GUIDE. Signals include: format or length "
+        "requirements ('in 3-4 sentences', 'in a paragraph', 'in about a page'), "
+        "assignment language ('answer this prompt', 'respond to', 'outline', "
+        "'describe in'), or pasting in a question they were clearly given to "
+        "answer. When in doubt between EXPLAIN and GUIDE, consider whether the "
+        "student wants to learn something or wants the tutor to produce something.\n\n"
+        "IMPORTANT: Classify based on what the student needs RIGHT NOW in their "
+        "current message, not on what the original task was. The teaching mode "
+        "can and should change from message to message as the student's needs "
+        "change. Use the conversation history for context, but do not lock into "
+        "a mode just because a previous message was classified a certain way.\n\n"
         "Respond with exactly one JSON object with two fields:\n"
-        '  - "query_type": one of NEEDS_GUIDANCE, STUCK, CHECK_MY_WORK, CONCEPTUAL, OFF_TASK\n'
-        '  - "reasoning": a brief one-sentence explanation of why you chose this category\n\n'
-        "Use the conversation history (if provided) to understand context. For example, "
-        "if a student says \"is that right?\" you need the history to know what they are "
-        "referring to and whether they have done work."
+        '  - "teaching_mode": one of EXPLAIN, GUIDE, CONFIRM, REDIRECT\n'
+        '  - "reasoning": a brief one-sentence explanation of why you chose this mode\n\n'
+        "Use the conversation history (if provided) to understand context."
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):
@@ -240,10 +218,10 @@ class ClassifierLLM(BaseLLM):
 
     def classify(self, student_query: str, conversation_history: list[dict] | None = None) -> tuple[str, str]:
         """
-        Classify a student query.
+        Classify a student query into a teaching mode.
 
         Returns:
-            Tuple of (query_type, reasoning).
+            Tuple of (teaching_mode, reasoning).
         """
         user_prompt = student_query
         system_prompt = self.system_prompt
@@ -270,11 +248,11 @@ class ClassifierLLM(BaseLLM):
             else:
                 result = {}
 
-        query_type = result.get("query_type", "NEEDS_GUIDANCE").upper()
+        teaching_mode = result.get("teaching_mode", "GUIDE").upper()
         reasoning = result.get("reasoning", "")
 
-        # Fallback if the model returns an invalid category
-        if query_type not in VALID_QUERY_TYPES:
-            query_type = "NEEDS_GUIDANCE"
+        # Fallback if the model returns an invalid mode
+        if teaching_mode not in VALID_TEACHING_MODES:
+            teaching_mode = "GUIDE"
 
-        return query_type, reasoning
+        return teaching_mode, reasoning
