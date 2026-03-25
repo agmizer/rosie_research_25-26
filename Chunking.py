@@ -10,7 +10,7 @@ class Chunking:
     """
 
 
-    def extract_text_from_pdf(path_to_pdf):
+    def extract_text_from_pdf(self, path_to_pdf):
         reader = PdfReader(path_to_pdf)
 
         pages = []
@@ -33,7 +33,7 @@ class Chunking:
             # this helps keep tables and figures together also right now does not keep tables intact
         return pages 
 
-    def extract_text_from_shape(shape):
+    def extract_text_from_shape(self, shape):
         """
         Extract text from an individual shape or grouped shapes.
         """
@@ -44,11 +44,11 @@ class Chunking:
                     text += para.Text + "\n"
         elif isinstance(shape, GroupShape):
             for sub_shape in shape.Shapes:
-                text += extract_text_from_shape(sub_shape)
+                text += self.extract_text_from_shape(sub_shape)
         return text
 
     
-    def extract_all_content(ppt_path):
+    def extract_all_content(self, ppt_path):
         """
         Extract all text content from shapes, tables, smartart, and speaker notes
         from a PowerPoint file.
@@ -88,7 +88,7 @@ class Chunking:
                             smartart_text += node.TextFrame.Text + "\n"
                 # textboxes    
                 else:
-                    shape_text += Chunking.extract_text_from_shape(shape)
+                    shape_text += self.extract_text_from_shape(shape)
 
             # speaker notes
             notes_slide = slide.NotesSlide

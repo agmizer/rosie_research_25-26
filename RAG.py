@@ -2,6 +2,7 @@ from Chunking import Chunking
 from EmbeddingsClass import Embeddings
 import faiss
 import numpy as np
+import os
 
 
 class RAG:
@@ -13,6 +14,7 @@ class RAG:
         self.chunks = []
         self.index = faiss.IndexFlatL2(384)
         self.embedder = Embeddings()
+        self.chunker = Chunking()
 
     def add_data(self, data_path, data_name):
         """
@@ -20,12 +22,15 @@ class RAG:
         JSON result to chunks and the embedded version of the chunks to embeddings
         """
 
-        if data_path.endswith(".pdf"):
-            docs = Chunking.extract_text_from_pdf(data_path)
-        else:
-            docs = Chunking.extract_all_content(data_path)
+        if not data_name:
+            data_name = os.path.splitext(os.path.basename(data_path))[0]
 
-        json_chunks = Chunking.chunk_with_langchain(docs, data_name)
+        if data_path.endswith(".pdf"):
+            docs = self.chunker.extract_text_from_pdf(data_path)
+        else:
+            docs = self.chunker.extract_all_content(data_path)
+
+        json_chunks = self.chunker.chunk_with_langchain(docs, data_name)
 
         texts = [chunk.page_content for chunk in json_chunks]
 
