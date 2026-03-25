@@ -3,6 +3,7 @@ from EmbeddingsClass import Embeddings
 import faiss
 import numpy as np
 import os
+import time
 
 
 class RAG:
@@ -25,12 +26,14 @@ class RAG:
         if not data_name:
             data_name = os.path.splitext(os.path.basename(data_path))[0]
 
+        t0 = time.time()
         if data_path.endswith(".pdf"):
             docs = self.chunker.extract_text_from_pdf(data_path)
         else:
             docs = self.chunker.extract_all_content(data_path)
 
         json_chunks = self.chunker.chunk_with_langchain(docs, data_name)
+        t1 = time.time()
 
         texts = [chunk.page_content for chunk in json_chunks]
 
@@ -42,10 +45,13 @@ class RAG:
         faiss.normalize_L2(embeddings)
 
         self.index.add(embeddings)
+        t2 = time.time()
 
         for chunk in json_chunks:
             chunk.metadata["dataset"] = data_name
             self.chunks.append(chunk)
+
+        print(f"  [RAG] {data_name}: parsing/chunking={t1-t0:.2f}s, embedding/indexing={t2-t1:.2f}s")
 
 
 

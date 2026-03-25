@@ -82,11 +82,11 @@ class Chunking:
                                     table_text += para.Text + "\t"
                         table_text += "\n"
                 # smartart
-                if isinstance(shape, ISmartArt):
+                elif isinstance(shape, ISmartArt):
                     for node in shape.Nodes:
                         if node.TextFrame is not None:
                             smartart_text += node.TextFrame.Text + "\n"
-                # textboxes    
+                # textboxes
                 else:
                     shape_text += self.extract_text_from_shape(shape)
 
@@ -105,7 +105,7 @@ class Chunking:
             all_content += slide_content.strip() + "\n\n"
             docs.append(
                 Document(
-                    page_content = all_content, 
+                    page_content = slide_content.strip(),
                     metadata={
                         "source": ppt_path,
                         "page": slide_index + 1

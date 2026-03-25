@@ -86,6 +86,7 @@ class TutorContext(BaseContext):
     """Context object passed to the tutor LLM."""
 
     rejected_attempts: list[dict] = field(default_factory=list)
+    rag_context: list[str] = field(default_factory=list)
 
     @property
     def teaching_mode_guidance(self) -> str:
@@ -95,6 +96,11 @@ class TutorContext(BaseContext):
     def to_system_prompt(self) -> str:
         """Build dynamic system prompt content from context fields."""
         parts = []
+
+        if self.rag_context:
+            parts.append("\n\nReference material from course documents (use when relevant, do not recite verbatim):")
+            for i, chunk in enumerate(self.rag_context, 1):
+                parts.append(f"\n[{i}] {chunk}")
 
         parts.append(f"\n\nTeaching mode: {self.teaching_mode}\n{self.teaching_mode_guidance}")
 

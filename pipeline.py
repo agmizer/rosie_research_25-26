@@ -1,10 +1,15 @@
+import time
+from pathlib import Path
 from llms import TutorLLM, VerifierLLM, EvaluatorLLM, ClassifierLLM
+from RAG import RAG
 from web_ui import WebUI
 from context import TutorContext, VerifierContext
 
 
 MODEL_NAME = "meta/llama-4-scout-17b-16e-instruct"
 MAX_VERIFIER_RETRIES = 5
+RAG_DATA_DIR = "RAGInitialLoadData"
+RAG_K = 3
 
 # only for testing, not necessary for the final implementation
 MAX_CONVERSATION_TURNS = 5
@@ -19,6 +24,16 @@ def main():
     tutor = TutorLLM(model_name=MODEL_NAME, max_new_tokens=500)
     verifier = VerifierLLM(model_name=MODEL_NAME)
     evaluator = EvaluatorLLM(model_name=MODEL_NAME)
+
+    # Initialize RAG with course materials
+    print("[pipeline] Loading course data into RAG...")
+    rag_start = time.time()
+    rag = RAG()
+    for file_path in Path(RAG_DATA_DIR).rglob("*"):
+        if file_path.is_file():
+            rag.add_data(str(file_path), None)
+    rag_elapsed = time.time() - rag_start
+    print(f"[pipeline] RAG loaded ({len(rag.chunks)} chunks indexed) in {rag_elapsed:.1f}s total")
 
     # Simulated user queries (one per conversation turn)
     """
@@ -46,10 +61,15 @@ def main():
         # Classify the query and build the context object
         teaching_mode, reasoning = classifier.classify(user_query, conversation_history=conversation)
 
+        # Retrieve relevant course material for the tutor
+        rag_results = rag.get_data(user_query, k=RAG_K)
+        rag_chunks = [doc.page_content for doc in rag_results]
+
         tutor_context = TutorContext(
             student_query=user_query,
             teaching_mode=teaching_mode,
             conversation_history=conversation,
+            rag_context=rag_chunks,
         )
 
         print("\n---Teaching Mode Classification---")

@@ -12,10 +12,10 @@ class Embeddings:
         self.model = AutoModel.from_pretrained('sentence-transformers/all-MiniLM-L6-v2')
 
     #Cosine Similarity
-    def find_best_matches(stored_embs: np.ndarray, query_embs: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        A = normalize(stored_embs)
-        B = normalize(query_embs)
-        sims = cosine_similarity(A, B)
+    def find_best_matches(self, stored_embs: np.ndarray, query_embs: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        A = F.normalize(torch.tensor(stored_embs), p=2, dim=1).numpy()
+        B = F.normalize(torch.tensor(query_embs), p=2, dim=1).numpy()
+        sims = A @ B.T
         best_idxs  = sims.argmax(axis=1)
         best_scores = sims[np.arange(len(best_idxs)), best_idxs]
         return best_idxs, best_scores

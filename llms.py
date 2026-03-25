@@ -15,7 +15,7 @@ class BaseLLM:
 
         self.client = OpenAI(
             base_url="http://dh-dgxh100-2.hpc.msoe.edu:8001/v1",
-            api_key="unused"
+            api_key="nuused"
         )
 
     def generate(self, LLM_input: str, system_prompt: str | None = None) -> str:
@@ -43,7 +43,10 @@ class TutorLLM(BaseLLM):
         "Only address the specific thing the student asked about. "
         "Never jump ahead to later steps or the final answer on their behalf. "
         "If the subject involves mathematical expressions, format them "
-        "using LaTeX notation with $ delimiters for inline math and $$ for display math."
+        "using LaTeX notation with $ delimiters for inline math and $$ for display math. "
+        "When provided with reference material from course documents, "
+        "use it to inform your responses with accurate, course-specific information. "
+        "Do not quote it verbatim or tell the student you are reading from a document."
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):
@@ -75,7 +78,8 @@ class VerifierLLM(BaseLLM):
         "teaching mode defines what the tutor should be doing right now. "
         "Follow the teaching mode guidance closely.\n\n"
         "Respond with exactly 'PASS' if the response is acceptable, or 'FAIL' "
-        "followed by a brief reason."
+        "followed by a brief reason. Do not suggest what the tutor should have "
+        "said or provide example responses — only explain why the response failed."
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):
@@ -89,7 +93,7 @@ class VerifierLLM(BaseLLM):
         """Return {'passed': bool, 'reason': str}."""
         full_system_prompt = self.system_prompt + context.to_system_prompt()
         raw = self.generate(context.tutor_response, system_prompt=full_system_prompt)
-        passed = "PASS" in raw.upper()
+        passed = raw.strip().upper().startswith("PASS")
         return {"passed": passed, "reason": raw}
 
 
