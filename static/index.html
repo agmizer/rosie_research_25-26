@@ -5,25 +5,45 @@
   <title>Sal - AI Tutor</title>
 
   <link rel="stylesheet" href="/static/style.css">
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 
 <body>
 
-<header>
-  <div>Sal - AI Tutor</div>
-  <div id="folder-btn">📁</div> <!--change to not ugly-->
-</header>
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <span>Courses</span>
+    <button id="add-course-btn" title="Add course">+</button>
+  </div>
+  <div id="sidebar-list"></div>
+</aside>
 
-<div id="chat"></div>
+<div id="main">
+  <header>
+    <div>Sal - AI Tutor</div>
+  </header>
 
-<div id="input-area">
-  <input id="msg" placeholder="Ask something..." />
-  <button id="send">Send</button>
-</div>
+  <div id="toolbar">
+    <button id="sidebar-toggle" title="Toggle sidebar">&#9776;</button>
+  </div>
 
-<div id="overlay">
-  <div id="overlay-content">
+  <div id="welcome">Hi, I'm Sal. How can I help?</div>
+
+  <div id="chat"></div>
+
+  <div id="input-wrapper">
+    <div id="input-area">
+      <input id="msg" placeholder="Ask something..." />
+      <button id="send">Send</button>
+    </div>
   </div>
 </div>
 
