@@ -28,9 +28,9 @@ class Chunking:
                 )
             )
 
-        # this returns a single string for all the documents
+        # this returns a list of documents
         # maybe look at langchain pdf reader so it is read as one document instead of as a string
-            # this helps keep tables and figures together also right now does not keep tables intact
+        # this helps keep tables and figures together also right now does not keep tables intact
         return pages 
 
     def extract_text_from_shape(self, shape):
@@ -53,13 +53,12 @@ class Chunking:
         Extract all text content from shapes, tables, smartart, and speaker notes
         from a PowerPoint file.
 
-        Returns a dictionary containing all extracted information separated by page.
+        Returns a list of Documents containing all extracted information separated by page.
         """
 
         presentation = Presentation()
         presentation.LoadFromFile(ppt_path)
 
-        all_content = ""
         docs = []
 
         for slide_index, slide in enumerate(presentation.Slides):
@@ -101,8 +100,6 @@ class Chunking:
             slide_content += smartart_text.strip() + "\n"
             slide_content += notes_text.strip()
 
-            # Add slide to full content (2 newlines between slides)
-            all_content += slide_content.strip() + "\n\n"
             docs.append(
                 Document(
                     page_content = slide_content.strip(),
@@ -132,9 +129,10 @@ class Chunking:
         return chunks
 
 def main():
-    #print(Chunking.extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"))
-    #print(Chunking.extract_all_content("pdfs/Week1D1_Intro-1.pptx"))
-    print(Chunking.chunk_with_langchain(Chunking.extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"), "Abstract Algebra Syllabus 2026"))
+    chunker = Chunking()
+    #print(chunker.extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"))
+    #print(chunker.extract_all_content("pdfs/Week1D1_Intro-1.pptx"))
+    print(Chunking.chunk_with_langchain(chunker.extract_text_from_pdf("pdfs/Abstract Algebra Syllabus Spring 2026.pdf"), "Abstract Algebra Syllabus 2026"))
 
 if __name__ == "__main__":
     main()

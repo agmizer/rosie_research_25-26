@@ -66,4 +66,4 @@ class RAG:
 
 
         D, I = self.index.search(query_vector, k)
-        return [self.chunks[i] for i in I[0]]
+        return [self.chunks[i] for i in I[0] if i >= 0]
