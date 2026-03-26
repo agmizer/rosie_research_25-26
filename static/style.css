@@ -25,27 +25,45 @@ header {
 #chat {
   flex: 1;
   overflow-y: auto;
+
+  width: min(800px, 100%);
+  margin: 0 auto;
+
   padding: 24px;
-  max-width: 800px;
-  margin: auto;
-  width: 100%;
+
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  box-sizing: border-box;
 }
 
 .row {
   display: flex;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .row.user {
   justify-content: flex-end;
 }
 
+.row.ai {
+  justify-content: flex-start;
+}
+
 .bubble {
   padding: 12px 16px;
   border-radius: 16px;
+
   max-width: 70%;
+  width: fit-content;
+
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+
+  box-sizing: border-box;
 }
 
 .user .bubble {
@@ -64,6 +82,9 @@ header {
   gap: 10px;
   background: white;
   border-top: 1px solid #ddd;
+
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #msg {
@@ -101,4 +122,22 @@ header {
   background: white;
   border: 3px solid #C12033;
   border-radius: 12px;
+}
+
+#folder-btn {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#folder-btn img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  transition: transform 0.15s ease;
+}
+
+#folder-btn:hover img {
+  transform: scale(1.1);
 }

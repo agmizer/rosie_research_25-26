@@ -71,110 +71,199 @@ let RAGInitialLoadData = {
 
 let currentFolder = null;
 
+function toggleOverlay() {
+  const overlay = document.getElementById("overlay");
+  const open = overlay.style.display === "flex";
+
+  overlay.style.display = open ? "none" : "flex";
+
+  if (!open) renderFileSystem();
+}
+
+function closeOverlay() {
+  document.getElementById("overlay").style.display = "none";
+  currentFolder = null;
+}
+
+//main
 function renderFileSystem() {
-  const overlay = document.getElementById("overlay-content");
+  const root = document.getElementById("overlay-content");
 
-  overlay.innerHTML = `
-    <div style="display:flex; width:100%; height:100%;">
+  root.innerHTML = `
+    <div style="
+      position:relative;
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      background:white;
+    ">
 
-      <!-- LEFT: folders -->
-      <div style="width:35%; border-right:2px solid #002f6c; padding:10px;">
-        <button onclick="createFolder()">+ Add Folder</button>
-        <div id="folderList"></div>
+      <!-- TOP BAR -->
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:10px;
+        border-bottom:2px solid #C12033;
+      ">
+
+        <!-- CLOSE (TOP LEFT X) -->
+        <button onclick="closeOverlay()"
+          style="
+            background:#C12033;
+            color:white;
+            border:none;
+            width:32px;
+            height:32px;
+            border-radius:6px;
+            font-weight:bold;
+            cursor:pointer;
+          ">
+          ✖
+        </button>
+
+        <div id="topControls"></div>
+
       </div>
 
-      <!-- RIGHT: files -->
-      <div style="flex:1; padding:10px;">
-        <div style="display:flex; justify-content:space-between;">
-          <h3 id="folderTitle">Folders</h3>
-          <button onclick="goBack()">⬅ Back</button>
-          <button onclick="createFile()">+ Add File</button>
-        </div>
-
-        <div id="fileList"></div>
-      </div>
+      <!-- BODY -->
+      <div id="fileSystemBody" style="
+        flex:1;
+        overflow:auto;
+        padding:20px;
+      "></div>
 
     </div>
   `;
 
-  drawFolders();
+  renderView();
 }
 
-function drawFolders() {
-  const list = document.getElementById("folderList");
-  list.innerHTML = "";
-
-  Object.keys(RAGInitialLoadData).forEach(folder => {
-    const div = document.createElement("div");
-    div.innerText = folder;
-    div.style.padding = "8px";
-    div.style.cursor = "pointer";
-    div.style.borderBottom = "1px solid #ccc";
-
-    div.onclick = () => {
-      currentFolder = folder;
-      drawFiles();
-    };
-
-    list.appendChild(div);
-  });
+//switch
+function renderView() {
+  if (!currentFolder) renderFolders();
+  else renderFiles();
 }
 
-function drawFiles() {
-  const list = document.getElementById("fileList");
-  const title = document.getElementById("folderTitle");
+function renderFolders() {
+  const body = document.getElementById("fileSystemBody");
+  const top = document.getElementById("topControls");
 
-  if (!currentFolder) {
-    title.innerText = "Folders";
-    list.innerHTML = "";
-    return;
-  }
+  top.innerHTML = ""; // no back button in root
 
-  title.innerText = currentFolder;
-  list.innerHTML = "";
-
-  RAGInitialLoadData[currentFolder].forEach(file => {
-    const div = document.createElement("div");
-    div.innerText = file;
-    div.style.padding = "6px";
-    div.style.borderBottom = "1px solid #eee";
-    list.appendChild(div);
-  });
+  body.innerHTML = `
+    <div style="
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap:20px;
+    ">
+      ${Object.keys(RAGInitialLoadData).map(folder => `
+        <div onclick="openFolder('${folder}')"
+          style="
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            cursor:pointer;
+            padding:10px;
+            border-radius:10px;
+          "
+        >
+          <div style="
+            width:60px;
+            height:60px;
+            background:#C12033;
+            border-radius:10px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            font-size:26px;
+          ">
+            📁
+          </div>
+          <div style="margin-top:8px; font-size:14px;">
+            ${folder}
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
-function createFolder() {
-  const name = prompt("Folder name:");
-  if (!name) return;
+// file system view
+function renderFiles() {
+  const body = document.getElementById("fileSystemBody");
+  const top = document.getElementById("topControls");
 
-  if (!RAGInitialLoadData[name]) {
-    RAGInitialLoadData[name] = [];
-  }
+  top.innerHTML = `
+  <div style="display:flex; gap:10px; align-items:center;">
 
-  drawFolders();
+    <button onclick="goBack()"
+      style="
+        background:#C12033;
+        color:white;
+        border:none;
+        width:32px;
+        height:32px;
+        border-radius:6px;
+        cursor:pointer;
+        font-size:18px;
+      ">
+      ←
+    </button>
+
+    <button onclick="createFile()"
+      style="
+        margin-left:10px;
+        width:32px;
+        height:32px;
+        border-radius:6px;
+        border:none;
+        background:#C12033;
+        color:white;
+        font-size:20px;
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      ">
+      +
+    </button>
+
+  </div>
+`;
+
+  body.innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      ${(RAGInitialLoadData[currentFolder] || []).map(file => `
+        <div style="
+          padding:10px;
+          border:1px solid #eee;
+          border-radius:8px;
+        ">
+          📄 ${file}
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
-function createFile() {
-  if (!currentFolder) return;
-
-  const name = prompt("File name:");
-  if (!name) return;
-
-  RAGInitialLoadData[currentFolder].push(name);
-  drawFiles();
+//actions
+function openFolder(name) {
+  currentFolder = name;
+  renderView();
 }
 
 function goBack() {
   currentFolder = null;
-  renderFileSystem();
+  renderView();
 }
 
-function toggleOverlay() {
-  const overlay = document.getElementById("overlay");
+function createFile() {
+  const name = prompt("File name:");
+  if (!name) return;
 
-  overlay.style.display =
-    overlay.style.display === "flex" ? "none" : "flex";
-
-  if (overlay.style.display === "flex") {
-    renderFileSystem();
-  }
+  RAGInitialLoadData[currentFolder].push(name);
+  renderView();
 }
