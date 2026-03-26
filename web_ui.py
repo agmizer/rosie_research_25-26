@@ -1,8 +1,11 @@
 import json
+import os
 import queue
+import shutil
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
+
 
 class _Handler(BaseHTTPRequestHandler):
     def __init__(self, ui, *args, **kwargs):
@@ -38,7 +41,25 @@ class _Handler(BaseHTTPRequestHandler):
             after = int(params.get("after", ["0"])[0])
             body = json.dumps(self.ui._get_messages(after)).encode()
             self._respond(200, "application/json", body)
-        
+
+        elif parsed.path == "/api/files":
+            rag_dir = "RAGInitialLoadData"
+            result = {"__root__": [], }
+            try:
+                for entry in os.listdir(rag_dir):
+                    entry_path = os.path.join(rag_dir, entry)
+                    if os.path.isdir(entry_path):
+                        result[entry] = [
+                            f for f in os.listdir(entry_path)
+                            if os.path.isfile(os.path.join(entry_path, f))
+                        ]
+                    elif os.path.isfile(entry_path):
+                        result["__root__"].append(entry)
+            except FileNotFoundError:
+                pass
+            body = json.dumps(result).encode()
+            self._respond(200, "application/json", body)
+
         else:
             self._respond(404, "text/plain", b"Not found")
 
@@ -53,6 +74,63 @@ class _Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 print(f"[http] do_POST error: {e}", flush=True)
                 self._respond(500, "text/plain", str(e).encode())
+
+        elif self.path == "/api/files/folder":
+            try:
+                length = int(self.headers.get("Content-Length", 0))
+                body = json.loads(self.rfile.read(length))
+                folder = body["folder"].strip()
+                if not folder:
+                    raise ValueError("Empty folder name")
+                path = os.path.join("RAGInitialLoadData", folder)
+                os.makedirs(path, exist_ok=True)
+                self._respond(200, "application/json", b'{"ok":true}')
+            except Exception as e:
+                self._respond(400, "application/json", json.dumps({"error": str(e)}).encode())
+
+        elif self.path == "/api/files/file":
+            try:
+                length = int(self.headers.get("Content-Length", 0))
+                body = json.loads(self.rfile.read(length))
+                folder = body["folder"].strip()
+                filename = body["filename"].strip()
+                if not folder or not filename:
+                    raise ValueError("Empty folder or filename")
+                path = os.path.join("RAGInitialLoadData", folder, filename)
+                open(path, "a").close()
+                self._respond(200, "application/json", b'{"ok":true}')
+            except Exception as e:
+                self._respond(400, "application/json", json.dumps({"error": str(e)}).encode())
+
+        else:
+            self._respond(404, "text/plain", b"Not found")
+
+    def do_DELETE(self):
+        parsed = urlparse(self.path)
+        params = parse_qs(parsed.query)
+
+        if parsed.path == "/api/files/folder":
+            try:
+                folder = params["folder"][0].strip()
+                path = os.path.join("RAGInitialLoadData", folder)
+                shutil.rmtree(path)
+                self._respond(200, "application/json", b'{"ok":true}')
+            except Exception as e:
+                self._respond(400, "application/json", json.dumps({"error": str(e)}).encode())
+
+        elif parsed.path == "/api/files/file":
+            try:
+                folder = params["folder"][0].strip()
+                filename = params["filename"][0].strip()
+                if folder:
+                    path = os.path.join("RAGInitialLoadData", folder, filename)
+                else:
+                    path = os.path.join("RAGInitialLoadData", filename)
+                os.remove(path)
+                self._respond(200, "application/json", b'{"ok":true}')
+            except Exception as e:
+                self._respond(400, "application/json", json.dumps({"error": str(e)}).encode())
+
         else:
             self._respond(404, "text/plain", b"Not found")
 
