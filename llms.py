@@ -15,7 +15,7 @@ class BaseLLM:
 
         self.client = OpenAI(
             base_url="http://dh-dgxh100-2.hpc.msoe.edu:8001/v1",
-            api_key="nuused"
+            api_key="unused"
         )
 
     def generate(self, LLM_input: str, system_prompt: str | None = None) -> str:
@@ -44,9 +44,6 @@ class TutorLLM(BaseLLM):
         "Never jump ahead to later steps or the final answer on their behalf. "
         "If the subject involves mathematical expressions, format them "
         "using LaTeX notation with $ delimiters for inline math and $$ for display math. "
-        "When provided with reference material from course documents, "
-        "use it to inform your responses with accurate, course-specific information. "
-        "Do not quote it verbatim or tell the student you are reading from a document."
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):
@@ -188,16 +185,16 @@ class ClassifierLLM(BaseLLM):
         "Examples:\n"
         '  - "I got dz/dx = 6x, is that right?"\n'
         '  - "I think the theme of the poem is isolation, does that make sense?"\n\n'
-        "REDIRECT — The student is off-topic: small talk, study strategies, or "
-        "questions unrelated to the subject. The tutor should respond briefly and "
+        "REDIRECT — The student is off-topic: small talk, questions unrelated to the subject, "
+        "or commands that a tutor shouldn't help with. The tutor should respond briefly and "
         "steer back toward learning.\n"
         "Examples:\n"
-        '  - "How should I study for the midterm?"\n'
+        '  - "What is the weather like today?"\n'
         '  - "Hello"\n\n'
         "IMPORTANT: If the student's message reads like an assignment question "
         "or homework prompt — asking the tutor to produce, write, or complete "
-        "a specific output — classify as GUIDE. Signals include: format or length "
-        "requirements ('in 3-4 sentences', 'in a paragraph', 'in about a page'), "
+        "a specific output — classify as GUIDE. Classify as GUIDE if there are mentions of "
+        "format or length requirements ('in 3-4 sentences', 'in a paragraph', 'in about a page'), "
         "assignment language ('answer this prompt', 'respond to', 'outline', "
         "'describe in'), or pasting in a question they were clearly given to "
         "answer. When in doubt between EXPLAIN and GUIDE, consider whether the "
@@ -210,7 +207,6 @@ class ClassifierLLM(BaseLLM):
         "Respond with exactly one JSON object with two fields:\n"
         '  - "teaching_mode": one of EXPLAIN, GUIDE, CONFIRM, REDIRECT\n'
         '  - "reasoning": a brief one-sentence explanation of why you chose this mode\n\n'
-        "Use the conversation history (if provided) to understand context."
     )
 
     def __init__(self, model_name: str, system_prompt: str | None = None, **kwargs):

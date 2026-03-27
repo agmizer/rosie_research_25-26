@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
-import numpy as np
+
 
 class Embeddings:
     """
@@ -11,17 +11,6 @@ class Embeddings:
         self.tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/all-MiniLM-L6-v2')
         self.model = AutoModel.from_pretrained('sentence-transformers/all-MiniLM-L6-v2')
 
-    #Cosine Similarity
-    def find_best_matches(self, stored_embs: np.ndarray, query_embs: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        A = F.normalize(torch.tensor(stored_embs), p=2, dim=1).numpy()
-        B = F.normalize(torch.tensor(query_embs), p=2, dim=1).numpy()
-        sims = A @ B.T
-        best_idxs  = sims.argmax(axis=1)
-        best_scores = sims[np.arange(len(best_idxs)), best_idxs]
-        return best_idxs, best_scores
-
-
-
     #Mean Pooling - Take attention mask into account for correct averaging
     def mean_pooling(self, model_output, attention_mask):
         token_embeddings = model_output[0] #First element of model_output contains all token embeddings
@@ -30,7 +19,7 @@ class Embeddings:
 
 
     def embed_text(self, text):
-        #either need to chunk before calling method or do chunknig in here before embedding
+        # either need to chunk before calling method or do chunkning in here before embedding
         
         # Tokenize sentences
         encoded_input = self.tokenizer(text, padding=True, truncation=True, return_tensors='pt')

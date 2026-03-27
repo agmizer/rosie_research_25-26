@@ -20,12 +20,13 @@ TUTOR_TEACHING_MODE_GUIDANCE = {
     "CONFIRM": (
         "The student has done work and is presenting it for confirmation. "
         "If their work is correct, affirm it clearly. If their work is wrong, "
-        "point to the specific error without giving the correct answer — "
-        "ask a question that helps them find the mistake."
+        "point to the specific error without giving the correct answer and "
+        "ask a question that helps them find the mistake. Do not move on or ask "
+        "any questions to advance the conversation."
     ),
     "REDIRECT": (
-        "The student is off-topic — making small talk, asking about study "
-        "strategies, or asking something unrelated to the subject. Respond "
+        "The student is off-topic: making small talk, talking about non-academic "
+        "subjects, or making commands that a tutor should not help with. Respond "
         "briefly and naturally. If appropriate, gently steer the conversation "
         "back toward learning goals."
     ),
@@ -42,13 +43,16 @@ VERIFIER_TEACHING_MODE_GUIDANCE = {
     "GUIDE": (
         "The tutor is in GUIDE mode. The tutor should ask guiding questions "
         "and give hints. Referencing the topic, mentioning relevant concepts, "
-        "or asking questions that name specific ideas is expected — the tutor "
+        "or asking questions that name specific ideas is expected since the tutor "
         "must reference the subject to ask useful guiding questions. "
         "Answering a student's direct question (e.g., confirming a fact, "
         "defining a term, or giving a short clarification) is acceptable "
-        "as part of guiding — not every response needs to be a question. "
-        "FAIL only if the tutor produces the complete, assembled deliverable "
-        "(the finished paragraph, the worked solution, the written response) "
+        "as part of guiding, not every response needs to be a question. "
+        "Presenting a general formula, method, or definition is part of guiding "
+        "and should PASS since the student still needs to apply it. "
+        "FAIL only if the tutor produces the complete, specific solution "
+        "to the student's particular problem "
+        "(the finished paragraph, the worked-out answer, the written response) "
         "that the student is supposed to create themselves."
     ),
     "CONFIRM": (
@@ -98,22 +102,24 @@ class TutorContext(BaseContext):
         parts = []
 
         if self.rag_context:
-            parts.append("\n\nReference material from course documents (use when relevant, do not recite verbatim):")
+            parts.append("\n\nUse the following reference material from course documents. Do not recite verbatim and "
+            "cite the document name and page number when you use information from a source:")
             for i, chunk in enumerate(self.rag_context, 1):
                 parts.append(f"\n[{i}] {chunk}")
 
-        parts.append(f"\n\nTeaching mode: {self.teaching_mode}\n{self.teaching_mode_guidance}")
+        parts.append(f"\n\nTeaching mode: {self.teaching_mode}\n"
+                     f"Guidelines for this teaching mode: {self.teaching_mode_guidance}")
 
         if self.rejected_attempts:
             parts.append("\n\nYour previous responses were rejected. Do NOT repeat these approaches.")
             for i, attempt in enumerate(self.rejected_attempts, 1):
                 parts.append(
                     f"\n\nRejected response {i}:\n{attempt['response']}\n"
-                    f"Reason: {attempt['reason']}"
+                    f"Reason it was rejected: {attempt['reason']}"
                 )
 
         if self.conversation_history:
-            parts.append(f"\n\nConversation so far:\n{self._format_history()}")
+            parts.append(f"\n\nConversation with student so far:\n{self._format_history()}")
 
         return "".join(parts)
 
@@ -137,6 +143,6 @@ class VerifierContext(BaseContext):
         parts.append(f"\n\nTeaching mode: {self.teaching_mode}\n{self.teaching_mode_guidance}")
 
         if self.conversation_history:
-            parts.append(f"\n\nConversation history:\n{self._format_history()}")
+            parts.append(f"\n\nConversation between student and tutor so far:\n{self._format_history()}")
 
         return "".join(parts)

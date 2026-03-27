@@ -13,6 +13,7 @@ RAG_K = 3
 
 # only for testing, not necessary for the final implementation
 MAX_CONVERSATION_TURNS = 5
+ENABLE_RAG = False
 
 
 def main():
@@ -26,25 +27,18 @@ def main():
     evaluator = EvaluatorLLM(model_name=MODEL_NAME)
 
     # Initialize RAG with course materials
-    print("[pipeline] Loading course data into RAG...")
-    rag_start = time.time()
-    rag = RAG()
-    for file_path in Path(RAG_DATA_DIR).rglob("*"):
-        if file_path.is_file():
-            rag.add_data(str(file_path), None)
-    rag_elapsed = time.time() - rag_start
-    print(f"[pipeline] RAG loaded ({len(rag.chunks)} chunks indexed) in {rag_elapsed:.1f}s total")
-
-    # Simulated user queries (one per conversation turn)
-    """
-    user_queries = [
-        "What is the derivative of x^2 + 3x + 5?",
-        "I think you just multiply the exponent down, right?",
-        "So the derivative of x^2 is 2x?",
-        "What happens to the constant 5?",
-        "So the final answer is 2x + 3?",
-    ]
-    """
+    rag = None
+    if ENABLE_RAG:
+        print("[pipeline] Loading course data into RAG...")
+        rag_start = time.time()
+        rag = RAG()
+        for file_path in Path(RAG_DATA_DIR).rglob("*"):
+            if file_path.is_file():
+                rag.add_data(str(file_path), None)
+        rag_elapsed = time.time() - rag_start
+        print(f"[pipeline] RAG loaded ({len(rag.chunks)} chunks indexed) in {rag_elapsed:.1f}s total")
+    else:
+        print("[pipeline] RAG disabled, skipping.")
 
     conversation = []
     turn = 0
@@ -58,13 +52,20 @@ def main():
         if user_query.lower() in ["exit", "quit"]:
             break
 
-        # Classify the query and build the context object
+        # Classify the query
         teaching_mode, reasoning = classifier.classify(user_query, conversation_history=conversation)
 
         # Retrieve relevant course material for the tutor
-        rag_results = rag.get_data(user_query, k=RAG_K)
-        rag_chunks = [doc.page_content for doc in rag_results]
+        if rag is not None:
+            rag_results = rag.get_data(user_query, k=RAG_K)
+            rag_chunks = [
+                f"(Source: {doc.metadata['dataset']}, Page {doc.metadata['page']})\n{doc.page_content}"
+                for doc in rag_results
+            ]
+        else:
+            rag_chunks = []
 
+        # Build tutor context object
         tutor_context = TutorContext(
             student_query=user_query,
             teaching_mode=teaching_mode,
