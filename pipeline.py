@@ -13,7 +13,8 @@ RAG_K = 3
 
 # only for testing, not necessary for the final implementation
 MAX_CONVERSATION_TURNS = 5
-ENABLE_RAG = False
+ENABLE_RAG = True
+ENABLE_HANDWRITING = False
 
 
 def main():
@@ -31,7 +32,7 @@ def main():
     if ENABLE_RAG:
         print("[pipeline] Loading course data into RAG...")
         rag_start = time.time()
-        rag = RAG()
+        rag = RAG(enable_handwriting=ENABLE_HANDWRITING)
         for file_path in Path(RAG_DATA_DIR).rglob("*"):
             if file_path.is_file():
                 rag.add_data(str(file_path), None)

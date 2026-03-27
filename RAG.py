@@ -14,12 +14,15 @@ class RAG:
         This class is used to make a full RAG section for the pipeline
     """
 
-    def __init__(self):
+    def __init__(self, enable_handwriting=True):
         self.chunks = []
         self.index = faiss.IndexFlatL2(384)
         self.embedder = Embeddings()
         self.chunker = Chunking()
-        self.handwriting = Handwriting()
+        if enable_handwriting:
+            self.handwriting = Handwriting()
+        else:
+            self.handwriting = None
 
 
     def add_data(self, data_path, data_name):
@@ -33,7 +36,7 @@ class RAG:
 
         t0 = time.time()
         if data_path.endswith(".pdf"):
-            if self.should_use_handwriting_model(data_path):
+            if self.handwriting and self.should_use_handwriting_model(data_path):
                 docs = self.chunker.extract_text_from_handwritten_pdf(self.handwriting, data_path)
             else:
                 docs = self.chunker.extract_text_from_pdf(data_path)
