@@ -1,0 +1,22 @@
+# Install with: pip install -r requirements.txt
+
+transformers
+sentence-transformers
+numpy
+openai
+pdf2image
+torch
+spire.presentation
+pypdf
+langchain-text-splitters
+langchain-core
+pillow
+olmocr
+qwen-vl-utils
+torchvision
+faiss-cpu
+accelerate
+scikit-learn
+
+
+#git+https://github.com/huggingface/transformers accelerate
