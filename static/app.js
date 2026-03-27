@@ -1,3 +1,4 @@
+const BASE = window.location.pathname.replace(/\/+$/, "");
 let after = 0;
 let RAGInitialLoadData = {};
 let openCourses = new Set();
@@ -80,7 +81,7 @@ async function send() {
   addMessage("user", text);
   input.value = "";
 
-  await fetch("/api/send", {
+  await fetch(`${BASE}/api/send`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message: text })
@@ -89,7 +90,7 @@ async function send() {
 
 async function poll() {
   try {
-    const res = await fetch(`/api/messages?after=${after}`);
+    const res = await fetch(`${BASE}/api/messages?after=${after}`);
     const msgs = await res.json();
     for (const msg of msgs) {
       addMessage(msg.role === "student" ? "user" : "ai", msg.content);
@@ -102,7 +103,7 @@ async function poll() {
 // ===================== Sidebar / File System =====================
 
 async function fetchFileSystem() {
-  const res = await fetch("/api/files");
+  const res = await fetch(`${BASE}/api/files`);
   RAGInitialLoadData = await res.json();
 }
 
@@ -162,7 +163,7 @@ async function createCourse() {
   const name = prompt("Course name:");
   if (!name || !name.trim()) return;
 
-  const res = await fetch("/api/files/folder", {
+  const res = await fetch(`${BASE}/api/files/folder`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ folder: name.trim() })
@@ -182,7 +183,7 @@ async function addFileToCourse(course) {
   const name = prompt(`Add file to "${course}":`);
   if (!name || !name.trim()) return;
 
-  const res = await fetch("/api/files/file", {
+  const res = await fetch(`${BASE}/api/files/file`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ folder: course, filename: name.trim() })
@@ -201,7 +202,7 @@ async function addFileToCourse(course) {
 async function deleteCourse(name) {
   if (!confirm(`Delete "${name}" and all its files?`)) return;
 
-  const res = await fetch(`/api/files/folder?folder=${encodeURIComponent(name)}`, {
+  const res = await fetch(`${BASE}/api/files/folder?folder=${encodeURIComponent(name)}`, {
     method: "DELETE"
   });
 
@@ -219,7 +220,7 @@ async function deleteFileFromCourse(course, filename) {
   if (!confirm(`Delete "${filename}"?`)) return;
 
   const res = await fetch(
-    `/api/files/file?folder=${encodeURIComponent(course)}&filename=${encodeURIComponent(filename)}`,
+    `${BASE}/api/files/file?folder=${encodeURIComponent(course)}&filename=${encodeURIComponent(filename)}`,
     { method: "DELETE" }
   );
 

@@ -13,7 +13,7 @@ RAG_K = 3
 
 # only for testing, not necessary for the final implementation
 MAX_CONVERSATION_TURNS = 5
-ENABLE_RAG = True
+ENABLE_RAG = False
 ENABLE_HANDWRITING = False
 
 
