@@ -1,9 +1,12 @@
 from Chunking import Chunking
 from EmbeddingsClass import Embeddings
+from handwritingModel import Handwriting
 import faiss
 import numpy as np
 import os
 import time
+from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
+import torch
 
 
 class RAG:
@@ -16,6 +19,8 @@ class RAG:
         self.index = faiss.IndexFlatL2(384)
         self.embedder = Embeddings()
         self.chunker = Chunking()
+        self.handwriting = Handwriting()
+
 
     def add_data(self, data_path, data_name):
         """
@@ -28,7 +33,10 @@ class RAG:
 
         t0 = time.time()
         if data_path.endswith(".pdf"):
-            docs = self.chunker.extract_text_from_pdf(data_path)
+            if self.should_use_handwriting_model(data_path):
+                docs = self.chunker.extract_text_from_handwritten_pdf(self.handwriting, data_path)
+            else:
+                docs = self.chunker.extract_text_from_pdf(data_path)
         else:
             docs = self.chunker.extract_all_content(data_path)
 
@@ -52,6 +60,23 @@ class RAG:
             self.chunks.append(chunk)
 
         print(f"  [RAG] {data_name}: parsing/chunking={t1-t0:.2f}s, embedding/indexing={t2-t1:.2f}s")
+
+
+    def should_use_handwriting_model(self, pdf_path, threshold=50):
+        """
+        Returns True if the PDF likely contains handwriting/scans.
+        threshold: Minimum characters per page to consider it 'digital'.
+        """
+        try:
+            reader = pypdf.PdfReader(pdf_path)
+            for page in reader.pages:
+                text = page.extract_text()
+                # If we find a decent amount of digital text, it's a standard PDF
+                if text and len(text.strip()) > threshold:
+                    return False 
+            return True # No text found across pages, likely a scan/handwriting
+        except Exception:
+            return True # Fallback to model if file is corrupted/unreadable
 
 
 

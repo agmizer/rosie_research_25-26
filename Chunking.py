@@ -1,3 +1,4 @@
+import torch
 from spire.presentation import *
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -28,10 +29,33 @@ class Chunking:
                 )
             )
 
-        # this returns a single string for all the documents
-        # maybe look at langchain pdf reader so it is read as one document instead of as a string
             # this helps keep tables and figures together also right now does not keep tables intact
         return pages 
+
+    def extract_text_from_handwritten_pdf(self, model, path_to_pdf):
+        reader = PdfReader(path_to_pdf)
+        num_pages = len(reader.pages)
+
+        pages = []
+        
+        for i in range(num_pages):
+            text = model.read_page(path_to_pdf, i)
+
+            if text:
+                pages.append(
+                    Document(
+                        page_content = text, 
+                        metadata={
+                            "source": path_to_pdf,
+                            "page": i+1
+                    }
+                )
+            )
+            torch.cuda.empty_cache()
+            
+        return pages
+
+        
 
     def extract_text_from_shape(self, shape):
         """
