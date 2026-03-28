@@ -55,7 +55,7 @@ python pipeline.py
 
 ## Example Output
 
-Screenshots of example interactions are located in the `example_outputs/` folder.
+Screenshots of example interactions are located in the `example_outputs` folder.
 
 ---
 
@@ -63,8 +63,7 @@ Screenshots of example interactions are located in the `example_outputs/` folder
 
 | Item | Link |
 |------|------|
-| Video | [Watch here]() |
-| Single Page Overview | [View here](https://msoe365-my.sharepoint.com/:w:/g/personal/sterritts_msoe_edu/IQB0Gx7qrUEjQrTW_3r-SKExAW8id207yrkjAMAr0ZgpBoM?e=udPaIf)|
+| Box | [Access here](https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fmsoe.box.com%2Fs%2Fhi474y3b4j2q5yunyyetfkvhij7qpv4p&data=05%7C02%7Cstevensl%40msoe.edu%7C85237b0be9ec4216066a08de8c65ca48%7C4046ceacfdd346c9ac80b7c4a49bab70%7C0%7C0%7C639102565983785037%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C40000%7C%7C%7C&sdata=dj%2BwbZDk1V3533u543z37KDPD2WvmHKs9UbsHR0Ql5o%3D&reserved=0)|
 
 ---
 
